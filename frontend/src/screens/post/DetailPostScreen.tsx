@@ -9,12 +9,14 @@ import { RootStackParamList } from '../../stacks/mainStack/MainStack';
 import { SlideModal } from '../../components/modal/Modal';
 import { BasicButton, SendButton } from '../../components/button/Buttons';
 import { Spacer } from '../../components/basic/Spacer';
-import { getPostDetail } from '../../apis/services/community/community';
+import { deleteIsLiked, deletePost, getPostDetail, updateIsLiked } from '../../apis/services/community/community';
 import { changeCategoryName } from '../../util/MarketUtil';
 import { Comment } from '../../components/comment/Comment';
 import styled from 'styled-components';
 import { widthPercent } from '../../config/dimension/Dimension';
 import { SingleLineInputBox } from '../../components/inputBox/Input';
+import { useRecoilValue } from 'recoil';
+import { userInfoState } from '../../recoil/atoms/userInfoState';
 
 interface DetaliPostProps {
   route: {
@@ -40,6 +42,7 @@ const ButtonContainer = styled.View`
 
 const DetailPostScreen = (props: DetaliPostProps) => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const userInfo = useRecoilValue(userInfoState);
   const [modalVisible, setModalVisible] = useState(false);
   const [commentData, setCommentData] = useState<Array<any>>([]);
   const [selectId, setSelectId] = useState(0);
@@ -149,17 +152,49 @@ const DetailPostScreen = (props: DetaliPostProps) => {
     }
   }, [postData]);
 
+  // 좋아요 처리
+  const toggleIsLike = async () => {
+    if (!postData.isLiked) {
+      setPostData({ ...postData, isLiked: true, likeCount: postData.likeCount + 1 });
+      await updateIsLiked({ communityId: props.route.params.id });
+    } else {
+      setPostData({ ...postData, isLiked: false, likeCount: postData.likeCount - 1 });
+      await deleteIsLiked({ communityId: props.route.params.id });
+    }
+  };
+
+  // 더보기 버튼 눌렀을 때
+  const onPressMore = () => {
+    if (userInfo.userId == String(postData.user.userId)) {
+      setModalVisible(true);
+    }
+  };
+
+  // 글 삭제 버튼 눌렀을 때
+  const onPressDelete = async () => {
+    await deletePost({ communityId: props.route.params.id });
+    navigation.goBack();
+  };
+
+  // 글 수정 버튼 눌렀을 때
+  const onPressModify = async () => {
+    setModalVisible(false);
+    navigation.navigate('UpdatePostScreen', { id: props.route.params.id });
+  };
+
   return (
     <Container>
       <ScrollView style={{ flex: 1, backgroundColor: Color.WHITE }}>
-        <Header type={'default'} firstIcon='back' secondIcon={'more'} onPressMore={() => setModalVisible(true)} />
+        <Header type={'default'} firstIcon='back' secondIcon={'more'} onPressMore={onPressMore} />
         <Post
-          onPress={() => console.log('')}
+          onPress={() => {}}
+          onPressLikeButton={toggleIsLike}
           postData={{
             name: postData.user.nickname,
             date: postData.createdAt,
             classification: changeCategoryName(postData.cate),
             content: postData.communityContent,
+            isLiked: postData.isLiked,
             likeNumber: postData.likeCount,
             commentNumber: postData.commentCount,
             profileImg: postData.user.profileImage,
@@ -169,23 +204,9 @@ const DetailPostScreen = (props: DetaliPostProps) => {
             imgUrl_four: postData.image4,
           }}
         />
-        {commentData.length !== 0 &&
-          commentData.map((item) => <Comment key={item.commentId} data={item} setSelectId={setSelectId} focusOnInput={focusOnInput} selectId={selectId} />)}
-
         <SlideModal isVisible={modalVisible} setIsVisible={setModalVisible}>
           <View style={{ flexDirection: 'column', alignItems: 'center' }}>
-            <BasicButton
-              onPress={() => {
-                console.log('수정 페이지로 이동');
-                // navigation.navigate('UpdatePostScreen', { postData });
-                setModalVisible(false);
-              }}
-              width={300}
-              height={50}
-              backgroundColor={Color.WHITE}
-              borderColor={Color.GRAY500}
-              borderRadius={10}
-            >
+            <BasicButton onPress={onPressModify} width={300} height={50} backgroundColor={Color.WHITE} borderColor={Color.GRAY500} borderRadius={10}>
               <Typo.BODY3_M color={Color.GREEN500}>수정하기</Typo.BODY3_M>
             </BasicButton>
             <Spacer space={12} />
@@ -193,7 +214,7 @@ const DetailPostScreen = (props: DetaliPostProps) => {
               onPress={() => {
                 Alert.alert('삭제', '정말 삭제하시겠습니까?', [
                   { text: '아니오', onPress: () => setModalVisible(false), style: 'cancel' },
-                  { text: '예', onPress: () => console.log('삭제 로직 실행'), style: 'destructive' },
+                  { text: '예', onPress: onPressDelete, style: 'destructive' },
                 ]);
                 setModalVisible(false);
               }}
