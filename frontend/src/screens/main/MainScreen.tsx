@@ -171,7 +171,7 @@ const MainScreen = () => {
         </View>
         <Spacer horizontal={false} space={10} />
         <CustomRadioButton data={radioData} />
-        {postData.length !== 0 ? (
+        { postData && postData.length !== 0 ? (
           postData.map((item) => (
             <Fragment key={item.communityId}>
               <Spacer horizontal={false} space={19} />
