@@ -76,9 +76,9 @@ export type RootStackParamList = {
     dong?: string;
   };
   FarmDairyAddScreen: undefined;
-  FarmDairyDetailScreen: undefined;
+  FarmDairyDetailScreen: { diary: any };
   FarmLedgerAddScreen: undefined;
-  FarmLedgerDetailScreen: undefined;
+  FarmLedgerDetailScreen: { accountBookId: number; today: string };
   FarmScreen: { activeIndex: number };
   FavoriteProductScreen: undefined;
   FcmTestScreen: undefined;
@@ -93,7 +93,7 @@ export type RootStackParamList = {
   MyPostScreen: undefined;
   MyProfileScreen: undefined;
   PlantResisterScreen: undefined;
-  PostCodeScreen: { id: number; screenName: string; plantName?: string, cropsVarietyId?: number };
+  PostCodeScreen: { id: number; screenName: string; plantName?: string; cropsVarietyId?: number };
   SearchPostScreen: undefined;
   SetLocationScreen: { value: number; varietyName: string; plantName: string; cropsVarietyId?: number };
   UpdateMyCropsScreen: { myCropsId: number; sido?: string; gugun?: string; dong?: string };

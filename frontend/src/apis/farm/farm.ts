@@ -12,6 +12,8 @@ export const getCropsSimple = async () => {
 
 export const deleteDiary = async (diaryId: number) => {
   const response = await tokenInstance.delete(`common/diary/${diaryId}`);
+  console.log('삭제 시작')
+  console.log(response.data)
   return response.data;
 };
 
@@ -32,7 +34,7 @@ export const getLedgerList = async (params: { myCropsId: string | null; startDat
 };
 
 export const getLedgerDetail = async (accountBookId: number) => {
-  const response = await tokenInstance.get(`/common/account-book/${accountBookId}`);
+  const response = await tokenInstance.get(`common/account-book/${accountBookId}`);
   return response.data;
 };
 
