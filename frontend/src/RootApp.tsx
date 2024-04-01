@@ -13,7 +13,7 @@ export const RootApp = () => {
   const [tokens, setTokens] = useState<{ accessToken: string | null; refreshToken: string | null }>({ accessToken: null, refreshToken: null });
   const [token, setToken] = useRecoilState(tokenState);
   const [userInfo, setUserInfo] = useRecoilState(userInfoState);
-
+ 
   const requestUserPermission = async () => {
     const authStatus = await messaging().requestPermission();
     const enabled = authStatus === messaging.AuthorizationStatus.AUTHORIZED || authStatus === messaging.AuthorizationStatus.PROVISIONAL;
@@ -27,6 +27,7 @@ export const RootApp = () => {
     const fcmToken = await messaging().getToken();
     console.log('[FCM Token] ', fcmToken);
   };
+
 
   useEffect(() => {
     // removeTokens();
@@ -68,13 +69,14 @@ export const RootApp = () => {
     };
 
     fetchTokens();
-
+    
     getFcmToken();
     requestUserPermission();
     const unsubscribe = messaging().onMessage(async (remoteMessage) => {
       console.log('[Remote Message] ', JSON.stringify(remoteMessage));
     });
     return unsubscribe;
+
   }, []);
 
   if (!token) {
@@ -83,3 +85,4 @@ export const RootApp = () => {
     return <MainStack />;
   }
 };
+

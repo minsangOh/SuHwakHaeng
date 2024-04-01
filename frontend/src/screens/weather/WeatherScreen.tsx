@@ -86,6 +86,7 @@ const WeatherScreen = () => {
       // 1. 유저 정보에서 시도군 정보 가져오기
       const location = await getLocation();
       // 1.1 없다면 설정페이지로 보내버리기
+      console.log(location.location)
       if (!location.location) {
         setLender(0);
         return;
