@@ -7,7 +7,6 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.suhwakhaeng.common.domain.trade.dto.TradeListResponse;
-import com.suhwakhaeng.common.domain.trade.dto.TradeMyListRequest;
 import com.suhwakhaeng.common.domain.trade.dto.TradeSearchRequest;
 import static com.suhwakhaeng.common.domain.trade.entity.QTradeBoard.tradeBoard;
 import static com.suhwakhaeng.common.domain.user.entity.QUser.user;
@@ -28,7 +27,7 @@ public class TradeSearchRepositoryImpl implements TradeSearchRepository {
         BooleanBuilder searchOptions = new BooleanBuilder();
         searchOptions.and(tradeBoard.status.eq(TradeStatus.SALE));
         if(request.id() != null){
-            searchOptions.and(tradeBoard.id.lt(request.id()));
+            searchOptions.and(tradeBoard.id.gt(request.id()));
         }
 
         if(request.cate() != null){
@@ -37,15 +36,6 @@ public class TradeSearchRepositoryImpl implements TradeSearchRepository {
 
         if(request.keyword() != null){
             searchOptions.and(tradeBoard.title.contains(request.keyword()));
-        }
-
-        return searchOptions;
-    }
-
-    private BooleanBuilder getMyOption(TradeMyListRequest request){
-        BooleanBuilder searchOptions = new BooleanBuilder();
-        if(request.id() != null){
-            searchOptions.and(tradeBoard.id.lt(request.id()));
         }
 
         return searchOptions;
@@ -84,8 +74,7 @@ public class TradeSearchRepositoryImpl implements TradeSearchRepository {
     }
 
     @Override
-    public List<TradeListResponse> searchMyTrade(Long userId, TradeMyListRequest request) {
-        BooleanBuilder myOption = getMyOption(request);
+    public List<TradeListResponse> searchMyTrade(Long userId) {
         return queryFactory
                 .select(
                         Projections.constructor(TradeListResponse.class, tradeBoard.id.as("id"),
@@ -108,7 +97,7 @@ public class TradeSearchRepositoryImpl implements TradeSearchRepository {
                 .from(tradeBoard)
                 .join(user).on(tradeBoard.user.id.eq(user.id))
                 .leftJoin(tradeLike).on(tradeBoard.id.eq(tradeLike.tradeLikePK.tradeBoard.id))
-                .where(user.id.eq(userId).and(myOption))
+                .where(user.id.eq(userId))
                 .groupBy(tradeBoard.id, tradeBoard.cate, tradeBoard.image1, tradeBoard.title, tradeBoard.createdAt, tradeBoard.price)
                 .orderBy(tradeBoard.createdAt.desc())
                 .limit(10)
@@ -116,8 +105,7 @@ public class TradeSearchRepositoryImpl implements TradeSearchRepository {
     }
 
     @Override
-    public List<TradeListResponse> searchMyLikeTrade(Long userId, TradeMyListRequest request) {
-        BooleanBuilder myOption = getMyOption(request);
+    public List<TradeListResponse> searchMyLikeTrade(Long userId) {
         BooleanExpression isLikedExpression = tradeLike.tradeLikePK.user.id.eq(userId)
                 .and(tradeLike.tradeLikePK.tradeBoard.id.eq(tradeBoard.id));
         BooleanExpression isLiked = JPAExpressions.selectOne()
@@ -141,7 +129,7 @@ public class TradeSearchRepositoryImpl implements TradeSearchRepository {
                 .from(tradeBoard)
                 .join(user).on(tradeBoard.user.id.eq(user.id))
                 .leftJoin(tradeLike).on(tradeBoard.id.eq(tradeLike.tradeLikePK.tradeBoard.id))
-                .where(isLiked.and(myOption))
+                .where(isLiked)
                 .groupBy(tradeBoard.id, tradeBoard.cate, tradeBoard.image1, tradeBoard.title, tradeBoard.createdAt, tradeBoard.price)
                 .orderBy(tradeBoard.createdAt.desc())
                 .limit(10)
