@@ -86,9 +86,7 @@ const MainScreen = () => {
   //글 등록 버튼
 
   const onPressRegist = () => {
-    navigation.navigate('CreatePostScreen', { cate: category });
-    setCategory('');
-    setActiveIndex(0);
+    navigation.navigate('CreatePostScreen');
   };
 
   const buttonData = [

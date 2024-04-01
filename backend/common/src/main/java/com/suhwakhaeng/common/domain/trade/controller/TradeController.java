@@ -1,6 +1,9 @@
 package com.suhwakhaeng.common.domain.trade.controller;
 
-import com.suhwakhaeng.common.domain.trade.dto.*;
+import com.suhwakhaeng.common.domain.trade.dto.TradeCreateRequest;
+import com.suhwakhaeng.common.domain.trade.dto.TradeSearchRequest;
+import com.suhwakhaeng.common.domain.trade.dto.TradeStatusUpdateRequest;
+import com.suhwakhaeng.common.domain.trade.dto.TradeUpdateRequest;
 import com.suhwakhaeng.common.domain.trade.enums.TradeStatus;
 import com.suhwakhaeng.common.domain.trade.service.TradeService;
 import com.suhwakhaeng.common.global.common.annotation.CustomPreAuthorize;
@@ -42,14 +45,14 @@ public class TradeController {
 
     @CustomPreAuthorize({"USER","ADMIN","BUISNESS","FARMER"})
     @GetMapping("/my/list")
-    public ResponseEntity<?> selectMyListTrade(@RequestHeader("X-Authorization-Id") Long userId, @ModelAttribute TradeMyListRequest request) {
-        return ResponseEntity.ok(Message.success(tradeService.selectMyListTrade(userId, request)));
+    public ResponseEntity<?> selectMyListTrade(@RequestHeader("X-Authorization-Id") Long userId) {
+        return ResponseEntity.ok(Message.success(tradeService.selectMyListTrade(userId)));
     }
 
     @CustomPreAuthorize({"USER","ADMIN","BUISNESS","FARMER"})
     @GetMapping("/like/list")
-    public ResponseEntity<?> selectMyLikeListTrade(@RequestHeader("X-Authorization-Id") Long userId, @ModelAttribute TradeMyListRequest request) {
-        return ResponseEntity.ok(Message.success(tradeService.selectMyLikeListTrade(userId, request)));
+    public ResponseEntity<?> selectMyLikeListTrade(@RequestHeader("X-Authorization-Id") Long userId) {
+        return ResponseEntity.ok(Message.success(tradeService.selectMyLikeListTrade(userId)));
     }
 
     @CustomPreAuthorize({"ADMIN","BUISNESS"})

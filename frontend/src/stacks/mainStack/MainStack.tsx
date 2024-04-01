@@ -62,7 +62,7 @@ export type RootStackParamList = {
   CropsDetailScreen: { cropsId: number; plantName: string; varietyName: string; cropsVarietyId: number };
   CropsScreen: undefined;
   CropsVarietyScreen: { plantName: string; plantId: number; value?: number };
-  CreatePostScreen: {cate?: string};
+  CreatePostScreen: undefined;
   DetailDiseasePlantScreen: { photo: { uri: string }; diagnosisResult: DiagnosisResult };
   DetailMyCropsScreen: { myCropsId: number };
   DetailPostScreen: { id: number };
