@@ -49,21 +49,17 @@ const DetailDiseasePlantScreen = () => {
     navigation.navigate('BottomNavigation', { screen: 'DiseasePlantScreen' });
   };
 
-const renderProtectContent = () => {
-  // `diagnosisResult.protect?.basic`가 존재하는지 확인
-  if (!diagnosisResult.isHealthy && diagnosisResult.protect && diagnosisResult.protect.basic) {
-    // `basic` 배열이 존재하는 경우, 내용을 렌더링
-    return diagnosisResult.protect.basic.map((item, index) => (
-      <TextContainer key={`basic-${index}`}>{item}</TextContainer>
-    ));
-  } else if (!diagnosisResult.isHealthy) {
-    // `basic` 배열이 존재하지 않는 경우, 적절한 대체 메시지나 요소를 렌더링
-    return <Typo.BODY3_M>방제 대책 정보가 제공되지 않았습니다.</Typo.BODY3_M>;
-  } else {
-    // 건강한 경우의 메시지를 렌더링
-    return <Typo.BODY3_M>이 식물은 건강합니다.</Typo.BODY3_M>;
-  }
-};
+  const renderProtectContent = () => {
+    // `diagnosisResult.protect?.basic`가 존재하는지 확인
+    if (!diagnosisResult.isHealthy && diagnosisResult.protect && diagnosisResult.protect.basic) {
+      // `basic` 배열이 존재하는 경우, 내용을 렌더링
+      return diagnosisResult.protect.basic.map((item, index) => (
+        <TextContainer key={`basic-${index}`}>{item}</TextContainer>
+      ));
+    } else {
+      return;
+    }
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: Color.WHITE }}>
@@ -75,7 +71,13 @@ const renderProtectContent = () => {
         </ImageContainer>
         <Container>
           <Typo.BODY1_M>
-            {diagnosisResult.plant} - {diagnosisResult.isHealthy ? '건강함' : diagnosisResult.disease}
+            {
+              diagnosisResult.isHealthy ?
+                '' :
+                <Typo.BODY1_M>{diagnosisResult.plant} - {diagnosisResult.disease ||
+                  <Typo.BODY1_M>이 작물은 <Typo.BODY1_M
+                    color={Color.GREEN600}>건강</Typo.BODY1_M>합니다.</Typo.BODY1_M>}</Typo.BODY1_M>
+            }
           </Typo.BODY1_M>
         </Container>
         <Spacer space={20} />
